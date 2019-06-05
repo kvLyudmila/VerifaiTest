@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">VerifaiTestApp</string>
+    <string name="auto_scan_button">Auto scan</string>
+    <string name="manual_scan_button">Manual scan</string>
+
+    <string name="licence">=== Verifai Licence file V2 ===
+G9BL02TeKwQpiJnvyn/skOSxeSZ5DOLDKZwhx7fMTt30kZ80wdaT4PtTvg99SP6LlrMUbK9Q/rvk
+DRZON08OxuNBD93fEc6qp9bFfXBJnJO/kMr190Eg/OYeeK/rNo8vNJN0X5uy+ZmpS78BC6XSoas2
+EaOloV2I1cqk4HDy1J6Ya1o3RdqeAgdykhRqU/c0PVwLZa/IW8maSq6FwZJJhdoGqruvVimzHzdH
+AldB2AswPJ/7EcFrAr2ZkrfyN2krrkMxCjzQm+q2EYlYKQKndQHq5wFCc9/vspLX+tYxeSrqT+xU
+k9uiFCyKS40PZN4TSet1wL6348Ub8PO0xObZ3BG1CiEjm5giavV9R68FKYzsQkm8Hw2qtBFVeY1V
+7yFG6gfpIh1uTY0iRdmDanOGWp/iRgyk1rm93unc6xgcTd/Sc4pNHVrb5wO2EO4/y4GXSq0yNiRz
+35o2iEBrxjRr9shjf3rGWCSc17MQ0VAtEplKEvN963lHaSTfD46oVKCDAO7BJricHI7g7ZIUNLy2
+LG7/EF3cJe9OXHLyHq5FR6k8AX2eCeUc9ivpNTkfv1H+z0PPPxiOBcHcgiNFeY6f2gdcl/vEIQJk
+thFRwqyHZSUlILSBAsCAukfGaRHDFYGY0IowooTVjlzn0FSNTbSv34TiJjmjahJQFpD93aX4h2i0
+8UtW93qFr9KVTz0VmidK+JeoLPr9T4EjkIFM5G7FFgL86PWqDPnrKVoPqBNoFGRdPjatg5y+jntR
+s1NuXNr+99Mq/Gk63WzlIps9ou/DSOfw6Y6l70XSRhSicHCneIjRX12VtInUbA==</string>
+    <string name="title_text">Please scan the document</string>
+</resources>
