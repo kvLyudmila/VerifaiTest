@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,8 +13,10 @@ import com.verifai.Verifai;
 import com.verifai.VerifaiResult;
 import com.verifai.VerifaiScanMode;
 import com.verifai.events.VerifaiCountryCodesListener;
+import com.verifai.events.VerifaiGenericNeuralModelDownloadListener;
 import com.verifai.events.VerifaiLicenceListener;
 import com.verifai.events.VerifaiNeuralModelListener;
+import com.verifai.events.VerifaiNfcResultListener;
 import com.verifai.events.VerifaiResultListener;
 import com.verifai.events.VerifaiVizListener;
 import com.verifai.exceptions.fatal.LicenceNotValidException;
@@ -46,6 +49,29 @@ public class MainActivity extends AppCompatActivity{
             "s1NuXNr+99Mq/Gk63WzlIps9ou/DSOfw6Y6l70XSRhSicHCneIjRX12VtInUbA==";
     private static final String TAG_VERIFAI = "VERIFAI";
     ArrayList<String> countryList;
+    private MrzData mrzData;
+    private VerifaiNfcResultListener nfcResultListener = new VerifaiNfcResultListener() {
+        @Override
+        public void onResult(@NotNull VerifaiNfcResult verifaiNfcResult) {
+            Log.i(TAG_VERIFAI, "verifaiNfcResult");
+            ((TextView) findViewById(R.id.title)).setText("NRC reading has done");
+            ((TextView) findViewById(R.id.txtCountry)).setText("country: ".concat(mrzData.getIssuingCountry()));
+            ((TextView) findViewById(R.id.txtSurname)).setText("surname: ".concat(mrzData.getSurname()));
+            ((TextView) findViewById(R.id.txtName)).setText("name: ".concat(mrzData.getNames()));
+            ((TextView) findViewById(R.id.txtPassportNumber)).setText("passport number: ".concat(mrzData.getDocumentNumber()));
+            ((TextView) findViewById(R.id.txtMrz)).setText("MRZData: ".concat(mrzData.getRaw()));
+        }
+
+        @Override
+        public void onProgress(int i) {
+            Log.i(TAG_VERIFAI, "verifaiNfcResult onProgress");
+        }
+
+        @Override
+        public void onError(@NotNull Throwable throwable) {
+            Log.i(TAG_VERIFAI, "verifaiNfcResult onError");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +90,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        downloadOCR();
         downloadCountries();
         downloadNNModel();
 
@@ -71,7 +98,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onResult(@NotNull VerifaiResult verifaiResult) {
                 if (verifaiResult == null) return;
-                MrzData mrzData = verifaiResult.getMrzData();
+                mrzData = verifaiResult.getMrzData();
                 if (mrzData == null) {
                     Toast.makeText(MainActivity.this, "MRzData is null", Toast.LENGTH_LONG).show();
                     ((TextView) findViewById(R.id.title)).setText("MRzData is null");
@@ -80,6 +107,8 @@ public class MainActivity extends AppCompatActivity{
                     ((TextView) findViewById(R.id.txtName)).setText("name: ".concat("is absent"));
                     ((TextView) findViewById(R.id.txtPassportNumber)).setText("passport number: ".concat("is absent"));
                     ((TextView) findViewById(R.id.txtMrz)).setText("MRZData: ".concat("is absent"));
+                } else if (mrzData != null && mrzData.isBiometricPassportNfcKeyValid()) {
+                    NFCReading(verifaiResult);
                 } else {
                     ((TextView) findViewById(R.id.title)).setText("The Document was be read");
                     ((TextView) findViewById(R.id.txtCountry)).setText("country: ".concat(mrzData.getIssuingCountry()));
@@ -125,8 +154,35 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    private void downloadOCR() {
+        if(Verifai.INSTANCE.hasOcrMrzNeuralModel(this)) {
+            // Already has a neural model, therefore there is no need to download it again
+        } else {
+            Verifai.INSTANCE.downloadOcrMrzNeuralModels(this, new VerifaiGenericNeuralModelDownloadListener() {
+                @Override
+                public void onProgress(int i) {
+                    Log.i(TAG_VERIFAI, "onProgress OCR");
+                }
+
+                @Override
+                public void onDownloaded(@NotNull File file) {
+                    Log.i(TAG_VERIFAI, "onDownloaded OCR");
+                }
+
+                @Override
+                public void onError(@NotNull Throwable throwable) {
+                    Log.i(TAG_VERIFAI, "onError OCR");
+                }
+            });
+        }
+    }
+
     private void downloadNNModel() {
         Verifai.downloadNeuralModel(MainActivity.this, countryList, null, verifaiNNModelListener);
+    }
+
+    private void NFCReading(VerifaiResult verifaiResult){
+        Verifai.readNfc(this, verifaiResult, false, nfcResultListener);
     }
 
     VerifaiNeuralModelListener verifaiNNModelListener = new VerifaiNeuralModelListener() {
